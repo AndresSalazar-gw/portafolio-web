@@ -383,23 +383,28 @@
   /* ---------- Videos perezosos ----------
      En el HTML van sin src (data-src + poster + preload="none").
      1) Un poco antes de entrar en pantalla se les pone el src.
-     2) Se reproducen solo los que se ven, máximo 4 a la vez (los más visibles); el resto en pausa.
+     2) Se reproducen solo los que se ven, máximo 4 a la vez en escritorio y 2 en móvil (los más visibles); el resto en pausa.
      Con movimiento reducido no se reproducen solos: muestran controles (salvo los de scroll de las webs). */
-  const MAX_PLAYING = 4;
+  /* En móvil (≤768px): versión ligera "-m.mp4" de cada video, máximo 2 reproduciéndose, precarga más
+     anticipada (900px) y preload "metadata" salvo para los que ya se están reproduciendo. */
+  const mobileMQ = matchMedia('(max-width: 768px)');
+  const maxPlaying = () => (mobileMQ.matches ? 2 : 4);
   const lazyVideos = [...d.querySelectorAll('video[data-src]')];
-  const loadVideo = (v) => {
-    if (v.src) return;
-    v.src = v.dataset.src;
-    v.preload = 'auto';
-    if (v.dataset.rate) v.defaultPlaybackRate = v.playbackRate = Number(v.dataset.rate) || 1;
+  const loadVideo = (v, playing = false) => {
+    if (!v.src) {
+      v.src = mobileMQ.matches ? v.dataset.src.replace(/\.mp4(\?.*)?$/, '-m.mp4$1') : v.dataset.src;
+      if (v.dataset.rate) v.defaultPlaybackRate = v.playbackRate = Number(v.dataset.rate) || 1;
+    }
+    // escritorio: siempre 'auto'; móvil: 'metadata' hasta que el video se reproduce
+    v.preload = !mobileMQ.matches || playing || !v.paused ? 'auto' : 'metadata';
   };
   const visible = new Map(); // video → proporción visible
   const updatePlaying = () => {
     const ranked = [...visible.entries()].sort((a, b) => b[1] - a[1]).map(([v]) => v);
-    const allowed = new Set(reduce ? [] : ranked.slice(0, MAX_PLAYING));
+    const allowed = new Set(reduce ? [] : ranked.slice(0, maxPlaying()));
     lazyVideos.forEach((v) => {
       if (allowed.has(v)) {
-        loadVideo(v);
+        loadVideo(v, true);
         if (v.paused) v.play().catch(() => {});
       } else if (!v.paused && !v.closest('.preview')) {
         v.pause();
@@ -415,7 +420,7 @@
         loadVideo(target);
         loader.unobserve(target);
       });
-    }, { rootMargin: '300px 0px' });
+    }, { rootMargin: mobileMQ.matches ? '900px 0px' : '300px 0px' });
     const player = new IntersectionObserver((entries) => {
       entries.forEach(({ target, isIntersecting, intersectionRatio }) => {
         if (isIntersecting && intersectionRatio > 0.15) visible.set(target, intersectionRatio);
