@@ -67,11 +67,13 @@ body {
 h1, h2, h3, p, ul, dl, dd, figure { margin: 0; padding: 0; }
 
 /* Grano de película: un tile PNG de 128px que se desplaza con transform (sin filtros por frame).
+   Solo vive en el FONDO: z-index -1, igual que .ambient, y como ::after va después de .ambient en el orden
+   del documento queda encima del gradiente pero debajo de todo el contenido (videos, imágenes y texto).
    Movimiento mínimo (±6px) y lento; en pantallas pequeñas y con movimiento reducido queda quieto. */
 body::after {
   content: "";
   position: fixed; inset: -128px;
-  z-index: 90; pointer-events: none;
+  z-index: -1; pointer-events: none;
   opacity: 0.07;
   background: url("../assets/media/grain.png") repeat 0 0 / 128px 128px;
   animation: grain 1.6s steps(4) infinite;
@@ -805,12 +807,12 @@ video { max-width: 450px; }
 /* etiquetas alineadas a los bordes del video (marco 1px + padding 6px) */
 .lost figcaption { padding-inline: 7px; }
 
-/* estética retro: scanlines + grano suave encima de las piezas (los videos son de baja resolución) */
+/* estética retro: scanlines + viñeta encima de las piezas (los videos son de baja resolución).
+   Sin grano: el grano (grain.png) solo va en el fondo de la página. */
 .page-lost .media::after {
   content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
   background:
     repeating-linear-gradient(to bottom, rgba(0, 8, 40, 0.42) 0, rgba(0, 8, 40, 0.42) 1px, transparent 1px, transparent 3px),
-    url("../assets/media/grain.png") 0 0 / 128px 128px,
     radial-gradient(ellipse at center, transparent 55%, rgba(0, 10, 60, 0.35) 100%);
   mix-blend-mode: multiply;
   opacity: 0.45;
