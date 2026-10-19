@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Editor / sistema
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+Desktop.ini
+
+# Dependencias y builds (el sitio no usa ninguna, por si se agregan luego)
+node_modules/
+dist/
+.cache/
+
+# Secretos y logs
+.env
+.env.*
+*.log
+npm-debug.log*
+
+# Archivos temporales / comprimidos de trabajo
+_*.tgz
+_*.zip
+_*.jpg
+*.tmp
