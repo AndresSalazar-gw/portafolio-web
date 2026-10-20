@@ -34,8 +34,8 @@
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   /* Nombre del hero, solo CSS. Medido con la fuente de respaldo: SALAZAR (300) = 4.09em,
      ANDRÉS (500) = 3.91em, SALAZAR en 400 = 4.24em. SALAZAR es la línea más ancha.
-     Escritorio: 19.5vw × 4.09 ≈ 80% del ancho. Móvil: ver @media (max-width: 640px). */
-  --hero-fs: clamp(2.5rem, 9.4vw, 15rem);
+     Escritorio: ver .hero__name. Móvil: ver el bloque "Hero en móvil" al final. */
+  --hero-fs: clamp(2.5rem, 7.5vw, 12rem);
   --logo-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 481 571'%3E%3Cpath d='M317.653 0C358.968 0 395.707 12.9986 424.508 39.1328C452.89 64.8868 470.931 100.978 480.05 142.923L411.257 157.878C404.375 126.223 392.017 104.714 377.199 91.2676C362.8 78.202 343.538 70.4004 317.653 70.4004C285.355 70.4004 256.556 84.8115 233.402 117.686C255.428 159.576 281.918 193.433 311.601 225.814L311.843 226.078L383.083 307.033L383.651 307.751C418.661 351.973 435.288 403.508 426.71 451.762C417.89 501.374 383.476 541.158 329.879 561.009L329.335 561.21L328.784 561.394C246.176 588.929 169.761 554.125 138.97 492.542L201.937 461.059C215.893 488.972 254.442 511.699 305.945 494.795C338.389 482.617 353.437 461.708 357.396 439.439C361.59 415.853 354.342 384.454 328.97 352.107L259.415 273.067C237.631 249.281 216.658 223.9 197.444 194.914L141.95 339.2H298.454V409.601H116.054V406.532L65.707 537.437L0 512.164L144 137.764L144.036 137.669L144.074 137.573C176.073 55.7987 234.189 8.16099e-05 317.653 0Z'/%3E%3C/svg%3E");
 }
 
@@ -261,11 +261,11 @@ html.lenis, html.lenis body { height: auto; }
 }
 .hero__stage { position: relative; display: grid; place-items: center; width: 100%; }
 /* Escritorio (>768px): ANDRÉS · logo · SALAZAR en una sola fila centrada. El tamaño sale solo de vw:
-   la fila mide ≈ 9.3em (ANDRÉS 3.91 + SALAZAR 4.09 + logo 0.7 + 2 huecos de 0.3), así que a 9.4vw ocupa
-   ~88% del ancho: cabe con margen desde 769px hasta 1920px y nunca salta de línea. */
+   la fila mide ≈ 9.9em (ANDRÉS 3.91 + SALAZAR 4.09 + logo 1.21 + 2 huecos de 0.35), así que a 7.5vw ocupa
+   ~74% del ancho: cabe con margen desde 769px hasta 1920px y nunca salta de línea. */
 .hero__name {
   position: relative; z-index: 1;
-  display: flex; align-items: center; justify-content: center; gap: 0.3em;
+  display: flex; align-items: center; justify-content: center; gap: 0.35em;
   width: 100%;
   white-space: nowrap;
   font-family: var(--font-display);
@@ -284,12 +284,12 @@ html.lenis, html.lenis body { height: auto; }
 .hero { transition: opacity 0.6s ease; }
 .fonts-pending .hero { opacity: 0; }
 
-/* Logo de vidrio, en la fila entre las dos palabras. js/main.js le pone el transform (flota, se inclina con el mouse).
-   Alto ≈ las mayúsculas (0.72em) + un poco más; mismas proporciones del SVG (481 × 571). */
+/* Logo de vidrio, protagonista: ≈ 2× la altura de las mayúsculas (0.72em → 1.44em), centrado en la línea de texto,
+   así sobresale por arriba y por abajo por igual. js/main.js le pone el transform (flota, se inclina con el mouse). */
 .hero__glass {
   position: relative; z-index: 2;
   display: block; flex: none;
-  height: calc(var(--hero-fs) * 0.86);
+  height: calc(var(--hero-fs) * 1.44);
   aspect-ratio: 481 / 571;
   pointer-events: none;
 }
@@ -299,13 +299,16 @@ html.lenis, html.lenis body { height: auto; }
   transition: opacity 1.2s var(--ease-out);
 }
 .motion .hero__glass:not(.is-in) > * { opacity: 0 !important; }
+/* glow azul muy difuso detrás del vidrio (paleta #0A3BFF): grande, tenue, sin parecer neón */
+.hero__glass-glow { color: #0A3BFF; opacity: 0.32; filter: blur(calc(var(--hero-fs) * 0.28)); transform: scale(1.12); }
 /* sombra suave abajo: copia del logo en negro, desenfocada y desplazada (crece con el tamaño del texto) */
 .hero__glass-shadow { color: #000; opacity: 0.6; filter: blur(calc(var(--hero-fs) * 0.1)); transform: translateY(calc(var(--hero-fs) * 0.14)); }
 /* cuerpo del vidrio: relleno claro (más presente que antes) con brillo arriba y reborde abajo */
 .hero__glass-blur {
   background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.16) 36%, rgba(255, 255, 255, 0.08) 62%, rgba(255, 255, 255, 0.24) 100%),
-    rgba(170, 190, 255, 0.12);
+    radial-gradient(120% 70% at 85% 100%, rgba(10, 59, 255, 0.34), rgba(10, 59, 255, 0) 70%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.16) 36%, rgba(255, 255, 255, 0.07) 62%, rgba(255, 255, 255, 0.16) 100%),
+    rgba(170, 190, 255, 0.10);
   -webkit-backdrop-filter: blur(6px) saturate(170%) brightness(1.25);
   backdrop-filter: blur(6px) saturate(170%) brightness(1.25);
   -webkit-mask: var(--logo-mask) center / contain no-repeat;
@@ -316,13 +319,13 @@ html.lenis, html.lenis body { height: auto; }
 /* highlight: brillo vertical arriba + reflejo diagonal */
 .hero__glass-shine {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.18) 14%, rgba(255, 255, 255, 0) 30%),
     linear-gradient(118deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.24) 40%, rgba(255, 255, 255, 0.05) 47%, rgba(255, 255, 255, 0) 56%);
   -webkit-mask: var(--logo-mask) center / contain no-repeat;
   mask: var(--logo-mask) center / contain no-repeat;
 }
-/* bordes de luz: brillante arriba/izquierda, más tenue abajo/derecha (degradados en el SVG) + halo suave */
-.hero__glass-edge { overflow: visible; filter: drop-shadow(0 0 calc(var(--hero-fs) * 0.05) rgba(255, 255, 255, 0.35)); }
+/* bordes de luz: blanco brillante arriba/izquierda, rim light azul abajo/derecha (degradados en el SVG) + halo suave */
+.hero__glass-edge { overflow: visible; filter: drop-shadow(0 0 calc(var(--hero-fs) * 0.04) rgba(255, 255, 255, 0.3)) drop-shadow(0 calc(var(--hero-fs) * 0.02) calc(var(--hero-fs) * 0.07) rgba(10, 59, 255, 0.45)); }
 .hero__bottom {
   position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(20px, 3vw, 40px);
   display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
@@ -1022,5 +1025,6 @@ video { max-width: 450px; }
   .hero__name { flex-direction: column; align-items: center; gap: 0.1em; }
   .name-first { align-self: flex-start; margin-left: -0.03em; }
   .name-last { align-self: flex-end; }
-  .hero__glass { height: calc(var(--hero-fs) * 1.2); }
+  /* logo claramente más grande que cada palabra: ancho ≈ 48% de la pantalla (alto = ancho × 571/481) */
+  .hero__glass { height: calc(48vw * 571 / 481); margin-block: calc(var(--hero-fs) * -0.05); }
 }

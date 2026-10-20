@@ -67,6 +67,8 @@
         target.ry = ((e.clientX / innerWidth) * 2 - 1) * MAX_TILT;
         target.rx = -((e.clientY / innerHeight) * 2 - 1) * MAX_TILT;
       }, { passive: true });
+      // al salir de la ventana vuelve suavemente a 0° (el lerp del frame se encarga del easing)
+      d.documentElement.addEventListener('pointerleave', () => { target.rx = 0; target.ry = 0; });
     }
     const t0 = performance.now();
     const frame = () => {
