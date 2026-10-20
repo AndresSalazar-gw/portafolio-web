@@ -35,6 +35,9 @@
      (familias neue-haas-grotesk-display y neue-haas-grotesk-text). -->
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- IBM Plex Mono sin bloquear el render (solo etiquetas pequeñas; line-height fijo, así el cambio de fuente no mueve nada) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="css/styles.css">
 <script>
   // Hasta que las fuentes están listas (máx. 800 ms) el hero y los títulos divididos no se muestran:
@@ -113,6 +116,28 @@
     <p class="stat__text" data-fade>seguidores en semana y media</p>
     <p class="stat__sub" data-fade><a class="u" href="work/homi.html">Giveaway Homi</a></p>
   </div>
+  </section>
+
+  <section class="section wrap awards" aria-labelledby="awards-title">
+    <h2 class="display awards__title" id="awards-title" data-split>Reconocimientos</h2>
+    <ul class="awards__list">
+      <li class="award" data-fade>
+        <span class="award__year">2026</span>
+        <div class="award__body">
+          <h3 class="award__title">Best Performance Student — The Algorithmic Marketer<span class="pill award__pill">Premio</span></h3>
+          <p class="award__org">ESIC University, Madrid</p>
+        </div>
+        <a class="btn btn--small award__btn" href="assets/certificados/ESIC-Best-Performance-Student.pdf" target="_blank" rel="noopener" aria-label="Ver Best Performance Student — The Algorithmic Marketer (PDF, se abre en una pestaña nueva)">Ver <span aria-hidden="true">↗</span></a>
+      </li>
+      <li class="award" data-fade>
+        <span class="award__year">2026</span>
+        <div class="award__body">
+          <h3 class="award__title">Scrum Fundamentals Certified (SFC)</h3>
+          <p class="award__org">SCRUMstudy</p>
+        </div>
+        <a class="btn btn--small award__btn" href="assets/certificados/Scrum-Fundamentals-Certified.pdf" target="_blank" rel="noopener" aria-label="Ver Scrum Fundamentals Certified (SFC) (PDF, se abre en una pestaña nueva)">Ver <span aria-hidden="true">↗</span></a>
+      </li>
+    </ul>
   </section>
 
   <section class="section wrap quote">

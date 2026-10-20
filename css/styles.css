@@ -876,6 +876,36 @@ video { max-width: 450px; }
 .quick > div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--gap); padding-block: 14px; border-bottom: 1px solid var(--line); }
 .quick dt { font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.2em; }
 .quick dd { margin: 0; }
+/* ---------- Reconocimientos (sobre-mi.html) ---------- */
+.awards__title { font-size: var(--fs-h2); }
+.awards__list { margin-top: clamp(40px, 5vw, 72px); border-top: 1px solid var(--line); }
+.award {
+  display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto;
+  align-items: center; gap: var(--gap);
+  padding-block: clamp(22px, 2.6vw, 36px);
+  border-bottom: 1px solid var(--line);
+  transition: color 0.5s var(--ease-out);
+}
+.award__year { font-family: var(--mono); font-size: var(--fs-xs); letter-spacing: 0.08em; color: var(--muted); font-variant-numeric: tabular-nums; transition: color 0.4s; }
+.award__title {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.375rem, 2.6vw, 2.25rem); line-height: 1.1; letter-spacing: -0.03em;
+  transition: transform 0.8s var(--ease-out);
+}
+.award__org { margin-top: 8px; font-size: var(--fs-sm); color: var(--muted); }
+@media (hover: hover) {
+  .awards__list:hover .award { color: var(--faint); }
+  .awards__list .award:hover { color: var(--fg); }
+  .award:hover .award__title { transform: translateX(0.12em); }
+  .award:hover .award__year { color: var(--accent); }
+}
+@media (max-width: 640px) {
+  /* móvil: año arriba, título y organización, botón abajo; todo a la izquierda */
+  .award { grid-template-columns: 1fr; gap: 10px; justify-items: start; }
+  .award__btn { margin-top: 6px; }
+}
+
 .numbers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
 .numbers .stat__num { font-size: clamp(4.5rem, 13vw, 12rem); }
 
