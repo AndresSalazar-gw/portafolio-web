@@ -51,14 +51,20 @@
   /* ---------- Logo de vidrio del hero: entra (fade + 0.92→1), flota y se inclina con el mouse ---------- */
   const glass = d.querySelector('.hero__glass');
   const hero = d.querySelector('.hero');
-  const BASE = ''; // el logo está en el flujo de la fila (ya no se posiciona con translate)
   const heroReady = () => {
     if (!glass || glass.classList.contains('is-in')) return;
     glass.classList.add('is-in');
     if (!reduce) animateGlass();
   };
   function animateGlass() {
-    const MAX_TILT = 8; // grados
+    const MAX_TILT = 12; // grados (tilt con el mouse, se suma a la flotación)
+    // Flotación idle: ±6px (12px de recorrido) en un ciclo de 6.5s con curva seno (ease-in-out natural),
+    // y un balanceo de ±2° desfasado del movimiento vertical para que no se vea mecánico.
+    const FLOAT_AMP = 6;
+    const FLOAT_PERIOD = 6.5;
+    const SWAY_DEG = 2;
+    const shadow = glass.querySelector('.hero__glass-shadow');
+    const glow = glass.querySelector('.hero__glass-glow');
     const LERP = 0.06;
     const target = { rx: 0, ry: 0 };
     const cur = { rx: 0, ry: 0, s: 0.92 };
@@ -76,8 +82,17 @@
       cur.rx += (target.rx - cur.rx) * LERP;
       cur.ry += (target.ry - cur.ry) * LERP;
       cur.s += (1 - cur.s) * LERP;
-      const y = Math.sin(t * 0.55) * 6; // flotación lenta
-      glass.style.transform = `${BASE} translate3d(0, ${y.toFixed(2)}px, 0) perspective(900px) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg) scale(${cur.s.toFixed(4)})`;
+      const phase = (t / FLOAT_PERIOD) * Math.PI * 2;
+      const y = -Math.sin(phase) * FLOAT_AMP;                          // negativo = sube
+      const rz = Math.sin(phase * 0.75 - 1.1) * SWAY_DEG;              // otro ritmo y otra fase
+      glass.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) perspective(900px) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg) rotateZ(${rz.toFixed(2)}deg) scale(${cur.s.toFixed(4)})`;
+      // la sombra se queda en el "suelo" (compensa la subida) y reacciona: al subir se achica y aclara, al bajar crece
+      const lift = -y / FLOAT_AMP;                                      // -1 (abajo) … 1 (arriba)
+      if (shadow) {
+        shadow.style.transform = `translate3d(0, calc(var(--hero-fs) * 0.14 + ${(-y).toFixed(2)}px), 0) scale(${(1 - lift * 0.12).toFixed(3)})`;
+        shadow.style.opacity = (0.6 - lift * 0.18).toFixed(3);
+      }
+      if (glow) glow.style.opacity = (0.32 - lift * 0.06).toFixed(3);
     };
     // solo corre mientras el hero se ve
     let on = false;

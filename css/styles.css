@@ -1014,17 +1014,19 @@ video { max-width: 450px; }
   }
 }
 
-/* ---------- Hero en móvil (≤768px): escalonado ----------
+/* ---------- Hero en móvil (≤768px): escalonado con aire ----------
    ANDRÉS arriba a la izquierda, el logo en el centro, SALAZAR abajo a la derecha, con 20px de margen lateral.
-   Se divide por 4.24 (SALAZAR en 400, el caso más ancho) para que nunca se corte. */
+   Tamaño: 0.16 × ancho útil → SALAZAR (4.09em) ≈ 65% y ANDRÉS (3.91em) ≈ 63% del ancho útil. */
 @media (max-width: 768px) {
-  :root { --hero-fs: calc((100vw - 40px) / 4.24); }
+  :root { --hero-fs: calc((100vw - 40px) * 0.16); }
   .hero.wrap { padding-inline: 20px; }
   .hero__bottom { left: 20px; right: 20px; }
   .seal--hero { right: 20px; }
-  .hero__name { flex-direction: column; align-items: center; gap: 0.1em; }
+  .hero__name { flex-direction: column; align-items: center; gap: clamp(20px, 6vw, 32px); }
   .name-first { align-self: flex-start; margin-left: -0.03em; }
   .name-last { align-self: flex-end; }
-  /* logo claramente más grande que cada palabra: ancho ≈ 48% de la pantalla (alto = ancho × 571/481) */
-  .hero__glass { height: calc(48vw * 571 / 481); margin-block: calc(var(--hero-fs) * -0.05); }
+  /* logo ≈ 40% del ancho de pantalla (alto = ancho × 571/481), con espacio claro arriba y abajo */
+  .hero__glass { height: calc(40vw * 571 / 481); }
+  /* sello más pequeño y abajo, lejos de SALAZAR */
+  .seal--hero { --seal: 84px; bottom: calc(clamp(20px, 3vw, 40px) + 60px); }
 }
