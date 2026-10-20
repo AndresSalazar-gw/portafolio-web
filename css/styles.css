@@ -35,7 +35,7 @@
   /* Nombre del hero, solo CSS. Medido con la fuente de respaldo: SALAZAR (300) = 4.09em,
      ANDRÉS (500) = 3.91em, SALAZAR en 400 = 4.24em. SALAZAR es la línea más ancha.
      Escritorio: 19.5vw × 4.09 ≈ 80% del ancho. Móvil: ver @media (max-width: 640px). */
-  --hero-fs: clamp(2.5rem, 19.5vw, 24rem);
+  --hero-fs: clamp(2.5rem, 9.4vw, 15rem);
   --logo-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 481 571'%3E%3Cpath d='M317.653 0C358.968 0 395.707 12.9986 424.508 39.1328C452.89 64.8868 470.931 100.978 480.05 142.923L411.257 157.878C404.375 126.223 392.017 104.714 377.199 91.2676C362.8 78.202 343.538 70.4004 317.653 70.4004C285.355 70.4004 256.556 84.8115 233.402 117.686C255.428 159.576 281.918 193.433 311.601 225.814L311.843 226.078L383.083 307.033L383.651 307.751C418.661 351.973 435.288 403.508 426.71 451.762C417.89 501.374 383.476 541.158 329.879 561.009L329.335 561.21L328.784 561.394C246.176 588.929 169.761 554.125 138.97 492.542L201.937 461.059C215.893 488.972 254.442 511.699 305.945 494.795C338.389 482.617 353.437 461.708 357.396 439.439C361.59 415.853 354.342 384.454 328.97 352.107L259.415 273.067C237.631 249.281 216.658 223.9 197.444 194.914L141.95 339.2H298.454V409.601H116.054V406.532L65.707 537.437L0 512.164L144 137.764L144.036 137.669L144.074 137.573C176.073 55.7987 234.189 8.16099e-05 317.653 0Z'/%3E%3C/svg%3E");
 }
 
@@ -260,9 +260,14 @@ html.lenis, html.lenis body { height: auto; }
   padding-bottom: calc(var(--nav-h) + 8px);
 }
 .hero__stage { position: relative; display: grid; place-items: center; width: 100%; }
+/* Escritorio (>768px): ANDRÉS · logo · SALAZAR en una sola fila centrada. El tamaño sale solo de vw:
+   la fila mide ≈ 9.3em (ANDRÉS 3.91 + SALAZAR 4.09 + logo 0.7 + 2 huecos de 0.3), así que a 9.4vw ocupa
+   ~88% del ancho: cabe con margen desde 769px hasta 1920px y nunca salta de línea. */
 .hero__name {
   position: relative; z-index: 1;
-  width: max-content;
+  display: flex; align-items: center; justify-content: center; gap: 0.3em;
+  width: 100%;
+  white-space: nowrap;
   font-family: var(--font-display);
   font-weight: 500;
   text-transform: uppercase;
@@ -271,48 +276,53 @@ html.lenis, html.lenis body { height: auto; }
   line-height: 0.86;
   letter-spacing: -0.03em;
 }
-.hero__name > span { display: inline-block; }
+.hero__name > span { display: block; }
 /* pesos fijos desde el primer pintado; ningún JS los cambia (si no hay 300, el navegador usa 400) */
 .name-first { font-weight: 500; }
 .name-last { font-weight: 300; }
 /* el hero espera a las fuentes (máx. 800 ms, ver <head>) y aparece con un fade de 0.6s */
 .hero { transition: opacity 0.6s ease; }
 .fonts-pending .hero { opacity: 0; }
-/* Logo de vidrio transparente. js/main.js mueve las variables --gy, --rx, --ry, --gs */
+
+/* Logo de vidrio, en la fila entre las dos palabras. js/main.js le pone el transform (flota, se inclina con el mouse).
+   Alto ≈ las mayúsculas (0.72em) + un poco más; mismas proporciones del SVG (481 × 571). */
 .hero__glass {
-  position: absolute; z-index: 2;
-  left: 50%; top: 50%;
-  height: calc(var(--hero-fs) * 1.03); /* ~60% del alto del bloque del nombre (2 líneas × 0.86em) */
+  position: relative; z-index: 2;
+  display: block; flex: none;
+  height: calc(var(--hero-fs) * 0.86);
   aspect-ratio: 481 / 571;
-  transform: translate(-50%, -50%) translateY(var(--gy, 0px)) perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--gs, 1));
   pointer-events: none;
 }
 /* La opacidad va en los hijos: si se pone en el contenedor, el blur deja de ver lo de atrás */
 .hero__glass > * {
-  position: absolute; inset: 0; width: 100%; height: 100%;
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   transition: opacity 1.2s var(--ease-out);
 }
 .motion .hero__glass:not(.is-in) > * { opacity: 0 !important; }
-/* sombra: copia del logo en negro, desenfocada y desplazada hacia abajo */
-.hero__glass-shadow { color: #000; opacity: 0.5; filter: blur(24px); transform: translateY(30px); }
-/* cuerpo del vidrio: casi transparente, apenas distorsiona */
+/* sombra suave abajo: copia del logo en negro, desenfocada y desplazada (crece con el tamaño del texto) */
+.hero__glass-shadow { color: #000; opacity: 0.6; filter: blur(calc(var(--hero-fs) * 0.1)); transform: translateY(calc(var(--hero-fs) * 0.14)); }
+/* cuerpo del vidrio: relleno claro (más presente que antes) con brillo arriba y reborde abajo */
 .hero__glass-blur {
-  background: rgba(255, 255, 255, 0.03);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.16) 36%, rgba(255, 255, 255, 0.08) 62%, rgba(255, 255, 255, 0.24) 100%),
+    rgba(170, 190, 255, 0.12);
+  -webkit-backdrop-filter: blur(6px) saturate(170%) brightness(1.25);
+  backdrop-filter: blur(6px) saturate(170%) brightness(1.25);
   -webkit-mask: var(--logo-mask) center / contain no-repeat;
   mask: var(--logo-mask) center / contain no-repeat;
 }
-/* Chrome: refracción leve con feDisplacementMap (filtro #glass-refract en index.html) */
-.refract .hero__glass-blur { backdrop-filter: url(#glass-refract) blur(3px); }
-/* reflejo diagonal suave */
+/* Chrome: refracción leve con feDisplacementMap (filtro #glass-refract en index.html); los demás, solo blur */
+.refract .hero__glass-blur { backdrop-filter: url(#glass-refract) blur(6px) saturate(170%) brightness(1.25); }
+/* highlight: brillo vertical arriba + reflejo diagonal */
 .hero__glass-shine {
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.16) 40%, rgba(255, 255, 255, 0.04) 47%, rgba(255, 255, 255, 0) 56%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.24) 40%, rgba(255, 255, 255, 0.05) 47%, rgba(255, 255, 255, 0) 56%);
   -webkit-mask: var(--logo-mask) center / contain no-repeat;
   mask: var(--logo-mask) center / contain no-repeat;
 }
-/* bordes de luz: brillante arriba/izquierda, tenue abajo/derecha (degradados en el SVG) */
-.hero__glass-edge { overflow: visible; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.18)); }
+/* bordes de luz: brillante arriba/izquierda, más tenue abajo/derecha (degradados en el SVG) + halo suave */
+.hero__glass-edge { overflow: visible; filter: drop-shadow(0 0 calc(var(--hero-fs) * 0.05) rgba(255, 255, 255, 0.35)); }
 .hero__bottom {
   position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(20px, 3vw, 40px);
   display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
@@ -957,12 +967,6 @@ video { max-width: 450px; }
 @media (max-width: 640px) {
   :root { --nav-h: 64px; }
   .bsod__foot { align-items: flex-start; }
-  /* hero del inicio en móvil: 20px a cada lado y el nombre ocupa ese ancho.
-     Se divide por 4.24 (SALAZAR en 400, el caso más ancho) para que nunca se corte. */
-  :root { --hero-fs: calc((100vw - 40px) / 4.24); }
-  .hero.wrap { padding-inline: 20px; }
-  .hero__bottom { left: 20px; right: 20px; }
-  .seal--hero { right: 20px; }
   .seal { --seal: 100px; }
   .seal--hero { bottom: calc(clamp(20px, 3vw, 40px) + 64px); }
   .seal--photo { right: 12px; bottom: -36px; }
@@ -1005,4 +1009,18 @@ video { max-width: 450px; }
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- Hero en móvil (≤768px): escalonado ----------
+   ANDRÉS arriba a la izquierda, el logo en el centro, SALAZAR abajo a la derecha, con 20px de margen lateral.
+   Se divide por 4.24 (SALAZAR en 400, el caso más ancho) para que nunca se corte. */
+@media (max-width: 768px) {
+  :root { --hero-fs: calc((100vw - 40px) / 4.24); }
+  .hero.wrap { padding-inline: 20px; }
+  .hero__bottom { left: 20px; right: 20px; }
+  .seal--hero { right: 20px; }
+  .hero__name { flex-direction: column; align-items: center; gap: 0.1em; }
+  .name-first { align-self: flex-start; margin-left: -0.03em; }
+  .name-last { align-self: flex-end; }
+  .hero__glass { height: calc(var(--hero-fs) * 1.2); }
 }

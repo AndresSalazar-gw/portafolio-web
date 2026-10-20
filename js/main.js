@@ -51,7 +51,7 @@
   /* ---------- Logo de vidrio del hero: entra (fade + 0.92→1), flota y se inclina con el mouse ---------- */
   const glass = d.querySelector('.hero__glass');
   const hero = d.querySelector('.hero');
-  const BASE = 'translate(-50%, -50%)';
+  const BASE = ''; // el logo está en el flujo de la fila (ya no se posiciona con translate)
   const heroReady = () => {
     if (!glass || glass.classList.contains('is-in')) return;
     glass.classList.add('is-in');
@@ -85,7 +85,7 @@
     }).observe(glass);
   }
   if (glass) {
-    if (!reduce) glass.style.transform = `${BASE} scale(0.92)`;
+    if (!reduce) glass.style.transform = 'scale(0.92)';
     // el hero aparece con las fuentes (fade de 0.6s en CSS); el logo entra justo después
     fontsReady.then(() => setTimeout(heroReady, reduce ? 0 : 450));
   }
